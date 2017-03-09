@@ -1,5 +1,5 @@
-import {Router, Request, Response, NextFunction} from 'express';
-import {UserSchema} from '../schema/user'
+import { Router, Request, Response, NextFunction } from 'express';
+import { User } from '../schema/user'
 import { IUser } from "../_interfaces/user";
 import Exception from "../_helpers/exception";
 export class UserRouter {
@@ -10,38 +10,42 @@ export class UserRouter {
    */
   constructor() {
     this.router = Router();
-   
+
     this.init();
   }
 
   /**
    * GET all Heroes.
    */
-  public register(req: Request, res: Response, next: NextFunction) {
-  
-  //find user
- 
-    UserSchema.methods.create({"password":"dgfftyu98&*8"}).then((user: IUser) => {
+  public getUsers(req: Request, res: Response, next: NextFunction) {
+
+    //find user
+
+    User.find().then((users) => {
       //verify user was saved or not
-      if (user === null) {
+      if (users === null) {
         res.sendStatus(404);
         next();
         return;
       }
-      else{
-        res.json(new Exception("err"));
+      else {
+        // rethinkdb.db('rethinkdb_ex').tableCreate('user').run(Conn, function (err, result) {
+        //   if (err) throw err;
+        //   res.json(JSON.stringify(result, null, 2));
+        // });
+        res.json(users);
       }
-    }).catch((err)=>res.json(new Exception(err)));
+    }).catch((err) => res.json(new Exception(err)));
 
   }
- 
+
 
   /**
    * Take each handler, and attach to one of the Express.Router's
    * endpoints.
    */
   init() {
-    this.router.get('/register', this.register);
+    this.router.get('/users', this.getUsers);
   }
 
 }

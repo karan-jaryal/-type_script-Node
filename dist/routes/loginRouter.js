@@ -1,6 +1,7 @@
 "use strict";
-const express_1 = require('express');
-const user_1 = require('../schema/user');
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const user_1 = require("../schema/user");
 const exception_1 = require("../_helpers/exception");
 class UserRouter {
     /**
@@ -13,17 +14,21 @@ class UserRouter {
     /**
      * GET all Heroes.
      */
-    register(req, res, next) {
+    getUsers(req, res, next) {
         //find user
-        user_1.UserSchema.methods.create({ "password": "dgfftyu98&*8" }).then((user) => {
+        user_1.User.find().then((users) => {
             //verify user was saved or not
-            if (user === null) {
+            if (users === null) {
                 res.sendStatus(404);
                 next();
                 return;
             }
             else {
-                res.json(new exception_1.default("err"));
+                // rethinkdb.db('rethinkdb_ex').tableCreate('user').run(Conn, function (err, result) {
+                //   if (err) throw err;
+                //   res.json(JSON.stringify(result, null, 2));
+                // });
+                res.json(users);
             }
         }).catch((err) => res.json(new exception_1.default(err)));
     }
@@ -32,12 +37,11 @@ class UserRouter {
      * endpoints.
      */
     init() {
-        this.router.get('/register', this.register);
+        this.router.get('/users', this.getUsers);
     }
 }
 exports.UserRouter = UserRouter;
 // Create the User, and export its configured Express.Router
 const userRoutes = new UserRouter();
 userRoutes.init();
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = userRoutes.router;
